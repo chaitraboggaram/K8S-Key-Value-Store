@@ -38,7 +38,7 @@ make
         Enter your Docker username and password.
     - Build Docker image:
         ```bash
-        docker build -t chaitraboggaram/k8s-key-value-store:latest .
+        docker build -t chaitraboggaram/k8s-key-value-store:latest
         ```
 
 4. **Install Python and Pip (if not already installed):**
@@ -59,7 +59,7 @@ make
 7. **Run Dockerfile:**
     - After installing Docker, build the Docker image:
         ```bash
-        docker build -t chaitraboggaram/k8s-key-value-store:latest .
+        docker build -t chaitraboggaram/k8s-key-value-store:latest
         ```
 
 8. **Run Makefile:**
@@ -87,6 +87,31 @@ make
     minikube start --driver=docker
     ```
 
-To check if the minikube is successfully installed.
+To check if the minikube is successfully installed
+```bash
 minikube status
+```
+
+```bash
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+```
+
+```bash
+kubectl get deployments
+```
+
+Now you should see the below image
+
+<img src="Images/deployments.png" alt="Description">
+
+
+kubectl get pods
+
+uvicorn main:app --reload
+
+http://localhost:8000/
+
+minikube ip
+Creating a local IP
 
