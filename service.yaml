@@ -6,7 +6,7 @@ spec:
   selector:
     app: k8s-key-value-store
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8000
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
   type: LoadBalancer
