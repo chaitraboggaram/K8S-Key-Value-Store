@@ -31,3 +31,13 @@ To obtain the required images, use the following commands:
 ```bash
 docker images
 ```
+
+Make sure you have this running in one terminal
+redis-server
+
+Docker in one
+
+And then for inserting key value pair
+http POST http://localhost:8000/set/my_key/my_value
+
+http http://localhost:8000/get/my_key

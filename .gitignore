@@ -1,5 +1,3 @@
-# .gitignore for macOS
-
 # macOS system files
 .DS_Store
 .AppleDouble
@@ -28,3 +26,5 @@ __pycache__/
 # Virtual environment
 venv/
 
+# Other
+dump.rdb
