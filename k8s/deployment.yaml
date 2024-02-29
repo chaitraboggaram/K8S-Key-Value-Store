@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-key-value-store
+  labels:
+    app: k8s-key-value-store
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: k8s-key-value-store
+  template:
+    metadata:
+      labels:
+        app: k8s-key-value-store
+    spec:
+      containers:
+      - name: k8s-key-value-store
+        image: chaitraboggaram/k8s-key-value-store:latest
+        ports:
+        - containerPort: 8000
+
