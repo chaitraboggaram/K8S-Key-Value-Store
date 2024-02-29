@@ -1,6 +1,12 @@
-import requests
+from huey import RedisHuey, crontab
 
-url = "http://localhost:8000/set/my_key/my_value"
-response = requests.post(url)
+huey = RedisHuey(host='redis://localhost:6379/')
 
-print(response.text)
+@huey.task()
+def add_numbers(a, b):
+    return a + b
+
+if __name__ == "__main__":
+    res = add_numbers(1, 2)
+    print(res)
+    print(res())

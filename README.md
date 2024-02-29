@@ -32,12 +32,31 @@ To obtain the required images, use the following commands:
 docker images
 ```
 
-Make sure you have this running in one terminal
-redis-server
-
-Docker in one
+Terminals
+1. redis-server
+2. Docker in one or uvicorn
+3. huey_consumer.py main.huey --workers 1
 
 And then for inserting key value pair
-http POST http://localhost:8000/set/my_key/my_value
+http POST http://localhost:8000/set/key1/value1
+OR
+curl -X POST "http://localhost:8000/set/my_key3/my_value3"
 
-http http://localhost:8000/get/my_key
+http GET http://localhost:8000/get/key1
+OR
+curl "http://localhost:8000/get/my_key2"
+
+
+
+redis-cli
+Opens Redis CLI
+
+keys *
+To get all keys
+
+SET key "value"
+Set key value pair
+
+GET key
+Get the key value pair
+

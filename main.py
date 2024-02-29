@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,13 +7,13 @@ import redis
 
 app = FastAPI()
 
-huey = RedisHuey(url='redis://localhost:6379/0')
-
-# Initialize Redis client on startup
+# Initialize Redis client for key-value store
 redis_pool = redis.ConnectionPool.from_url("redis://localhost:6379/0")
 redis_client = redis.StrictRedis(connection_pool=redis_pool)
 
-app.mount("/templates", StaticFiles(directory="templates"), name="templates")
+# Initialize Huey for job monitoring
+EXECUTING_PREFIX = "executing"
+huey = RedisHuey('entrypoint', host='localhost')
 
 @huey.task()
 def set_key_value(key: str, value: str):
@@ -21,7 +22,6 @@ def set_key_value(key: str, value: str):
 
 @app.on_event("startup")
 def startup_event():
-    # Add any other startup tasks if needed
     pass
 
 @app.get("/", response_class=HTMLResponse)
