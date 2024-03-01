@@ -127,3 +127,37 @@ To view all networks
 ```bash
 docker network ls
 ```
+
+docker login -u "chaitraboggaram" -p "Padhu@1996" docker.io
+
+docker tag consumer:latest k8s-key-value-store:consumer
+docker tag producer:latest k8s-key-value-store:producer
+docker tag redis:latest k8s-key-value-store:redis
+
+cd to redis
+docker build -t chaitraboggaram/k8s-key-value-store:redis .
+docker push chaitraboggaram/k8s-key-value-store:redis
+
+cd to producer
+docker build -t chaitraboggaram/k8s-key-value-store:producer .
+docker push chaitraboggaram/k8s-key-value-store:producer
+
+cd to consumer
+docker build -t chaitraboggaram/k8s-key-value-store:consumer .
+docker push chaitraboggaram/k8s-key-value-store:consumer
+
+Creating pods and network for pods
+kubectl apply -f redis-pod.yaml
+kubectl apply -f producer-pod.yaml
+kubectl apply -f consumer-pod.yaml
+kubectl apply -f redis-service.yaml
+kubectl apply -f producer-service.yaml
+kubectl apply -f consumer-service.yaml
+
+Get all pods
+kubectl get pods
+
+Deleting pods
+kubectl delete pod redis-pod producer-pod consumer-pod
+kubectl delete pods --all
+

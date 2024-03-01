@@ -10,7 +10,7 @@ services:
       - .:/app
     networks:
       - my-network
-
+    image: consumer:latest
 networks:
   my-network:
     external: true

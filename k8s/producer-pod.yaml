@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer-deployment
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: producer-pod
+  template:
+    metadata:
+      labels:
+        app: producer-pod
+    spec:
+      containers:
+      - name: producer
+        image: chaitraboggaram/k8s-key-value-store:producer
