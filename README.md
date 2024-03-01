@@ -72,21 +72,21 @@ Get the key value pair
 ## Managing Data
 #### POST key value pair
 ```bash
-docker exec -it <ContainerID> http POST http://localhost:8000/set/Key/Value
+docker exec -it <ProducerContainerID> http POST http://localhost:8000/set/Key/Value
 ```
 
 #### GET value for specific key
 ```bash
-docker exec -it <ContainerID> http GET http://localhost:8000/get/Key
+docker exec -it <ProducerContainerID> http GET http://localhost:8000/get/Key
 ```
 
 #### Update value for a particular key
 ```bash
-docker exec -it <ContainerID> http PUT http://localhost:8000/update/Key/NewValue
+docker exec -it <ProducerContainerID> http PUT http://localhost:8000/update/Key/NewValue
 ```
 #### Delete a key value pair
 ```bash
-docker exec -it <ContainerID> http DELETE http://localhost:8000/delete/Key
+docker exec -it <ProducerContainerID> http DELETE http://localhost:8000/delete/Key
 ```
 </br>
 
