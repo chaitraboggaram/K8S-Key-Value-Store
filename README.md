@@ -147,12 +147,17 @@ docker build -t chaitraboggaram/k8s-key-value-store:consumer .
 docker push chaitraboggaram/k8s-key-value-store:consumer
 
 Creating pods and network for pods
-kubectl apply -f redis-pod.yaml
+cd k8s
 kubectl apply -f producer-pod.yaml
 kubectl apply -f consumer-pod.yaml
-kubectl apply -f redis-service.yaml
 kubectl apply -f producer-service.yaml
 kubectl apply -f consumer-service.yaml
+kubectl apply -f loadbalancer-service.yaml
+kubectl apply -f redis-primary-service.yaml
+kubectl apply -f redis-secondary-service.yaml
+kubectl apply -f redis-primary.yaml
+kubectl apply -f redis-secondary.yaml
+kubectl apply -f loadbalancer-service.yaml
 
 Get all pods
 kubectl get pods
@@ -161,3 +166,35 @@ Deleting pods
 kubectl delete pod redis-pod producer-pod consumer-pod
 kubectl delete pods --all
 
+minikube dashboard
+
+Deleting services
+kubectl get services
+kubectl delete service redis-service consumer-service producer-service
+
+Adding loadbalancer service
+kubectl apply -f loadbalancer-service.yaml
+
+Delete everything
+kubectl delete all --all
+
+kubectl exec -it <producer-pod-name> -- container-name http POST http://<producer-service-name>:8000/set/Key/Value
+kubectl exec -it <pod-name> -- container-name http POST http://<service-name>:8000/set/Key1/Value1
+
+Get loadbalancer port
+kubectl get services my-loadbalancer-service --output='jsonpath="{.spec.ports[0].nodePort}"'
+
+Get minikube IP
+minikube ip
+
+Combination of these 2 gives for example: http://192.168.49.2:31181
+
+To get external IP for loadbalancer, have this running in 1 terminal window
+minikube tunnel
+
+Check if external IP is assigned
+kubectl get services my-loadbalancer-service
+
+curl -X POST http://<external-ip>/set/Key/Value
+<minikube-ip>
+http POST http://192.168.49.2/set/Key1/Value1

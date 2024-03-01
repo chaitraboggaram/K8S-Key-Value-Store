@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-primary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-primary
+  template:
+    metadata:
+      labels:
+        app: redis-primary
+    spec:
+      containers:
+      - name: redis
+        image: chaitraboggaram/k8s-key-value-store:redis
+        ports:
+        - containerPort: 6379

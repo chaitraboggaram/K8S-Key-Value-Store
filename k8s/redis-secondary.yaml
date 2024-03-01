@@ -1,17 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-deployment
+  name: redis-secondary
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: redis-pod
+      app: redis-secondary
   template:
     metadata:
       labels:
-        app: redis-pod
+        app: redis-secondary
     spec:
       containers:
       - name: redis
         image: chaitraboggaram/k8s-key-value-store:redis
+        ports:
+        - containerPort: 6379
+        command:
+        - "redis-server"
+        - "--slaveof"
+        - "redis-primary-service"
+        - "6379"
