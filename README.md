@@ -32,17 +32,18 @@ To obtain the required images, use the following commands:
 docker images
 ```
 
+## Localhost
 Terminals
 1. redis-server
 2. Docker in one or uvicorn
-3. huey_consumer.py main.huey --workers 1
+3. huey_consumer.py main.huey --workers 4
 
 And then for inserting key value pair
-http POST http://localhost:8000/set/key1/value1
+http POST http://localhost:8000/set/key3/value3
 OR
 curl -X POST "http://localhost:8000/set/my_key3/my_value3"
 
-http GET http://localhost:8000/get/key1
+http GET http://localhost:8000/get/key3
 OR
 curl "http://localhost:8000/get/my_key2"
 
@@ -59,4 +60,17 @@ Set key value pair
 
 GET key
 Get the key value pair
+
+## On docker
+
+docker network create my-network
+docker run --name redis --network my-network -d redis
+docker run --name producer-container --network my-network -d producer-web
+docker run --name consumer-container --network my-network -d consumer-web
+
+Login to redis docker
+docker exec -it my-redis-container /bin/bash
+
+docker network inspect my-network
+Views all the containers in my network
 

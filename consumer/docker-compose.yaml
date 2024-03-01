@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  consumer:
+    build: .
+    command: sh -c "python huey_consumer.py main.huey --workers 4"
+    ports:
+      - 8001:8001
+    volumes:
+      - .:/app
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    external: true

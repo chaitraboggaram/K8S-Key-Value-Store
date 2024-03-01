@@ -8,12 +8,12 @@ import redis
 app = FastAPI()
 
 # Initialize Redis client for key-value store
-redis_pool = redis.ConnectionPool.from_url("redis://localhost:6379/0")
+redis_pool = redis.ConnectionPool.from_url("redis://redis:6379/0")
 redis_client = redis.StrictRedis(connection_pool=redis_pool)
 
 # Initialize Huey for job monitoring
 EXECUTING_PREFIX = "executing"
-huey = RedisHuey('entrypoint', host='localhost')
+huey = RedisHuey('entrypoint', host='redis')
 
 @huey.task()
 def set_key_value(key: str, value: str):
