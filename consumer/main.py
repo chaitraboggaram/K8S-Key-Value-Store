@@ -1,18 +1,13 @@
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
 from huey import RedisHuey
 import redis
 
 app = FastAPI()
 
-# Initialize Redis client for key-value store
 redis_pool = redis.ConnectionPool.from_url("redis://redis:6379/0")
 redis_client = redis.StrictRedis(connection_pool=redis_pool)
-
-# Initialize Huey for job monitoring
-EXECUTING_PREFIX = "executing"
 huey = RedisHuey('entrypoint', host='redis')
 
 @huey.task()

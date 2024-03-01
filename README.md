@@ -2,9 +2,16 @@
 
 Developing a key-value store using Kubernetes (K8s), FastAPI, and Huey as a REDIS queue on Apple M2 MacBook.
 
+## Create a network and add conatiners to the network
+
+```bash
+docker network create my-network
+```
+</br>
+
 ## Building Docker Image
 
-Build the Docker file with the prerequisites locally using:
+Build the Docker file with the prerequisites locally using
 
 ```bash
 docker compose up --build
@@ -12,6 +19,7 @@ docker compose up --build
 Run producer, consumer and redis seperately in 3 different terminals and have them running as below
 ![Alt text](images/docker-compose.png)
 
+</br>
 
 ## Running Docker Compose
 
@@ -23,13 +31,18 @@ docker-compose up
 
 This will start the necessary containers and services.
 
+</br>
 
 ## Redis CLI Commands to Test
 1. Login Redis Container
 
 ```bash
 docker exec -it <RedisContainerID> /bin/bash
-Run `docker ps` to get container ID
+```
+
+Run the following command to get the container ID:
+```bash
+docker ps
 ```
 
 2. Once logged inside Redis Container, login to CLI
@@ -53,17 +66,31 @@ GET key
 ```
 Get the key value pair
 
-## Create a network and add conatiners to the network
+</br>
 
+
+## Managing Data
+#### POST key value pair
 ```bash
-docker network create my-network
-docker run --name redis --network my-network -d redis
-docker run --name producer-container --network my-network -d producer-web
-docker run --name consumer-container --network my-network -d consumer-web
+docker exec -it <ContainerID> http POST http://localhost:8000/set/Key/Value
+```
+
+#### GET value for specific key
+```bash
+docker exec -it <ContainerID> http GET http://localhost:8000/get/Key
+```
+
+#### Update value for a particular key
+```bash
+docker exec -it <ContainerID> http PUT http://localhost:8000/update/Key/NewValue
+```
+#### Delete a key value pair
+```bash
+docker exec -it <ContainerID> http DELETE http://localhost:8000/delete/Key
 ```
 </br>
 
-### Other commands
+## Other commands
 To obtain the required images, use the following commands:
 
 ```bash
@@ -81,12 +108,22 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <Co
 ```
 </br>
 
-#### POST key value pair
+Stop all running docker containers
 ```bash
-curl -X POST -d "value=Value2" http://<ContainerIP>:8000/set/Key2
+docker stop $(docker ps -aq)
 ```
 
-#### GET value for specific key
+Remove all docker images from your machine
 ```bash
-docker exec -it ba653fa08bd8 http GET http://localhost:8000/get/Key3
+docker rmi $(docker images -q)
+```
+
+To force delete images use
+```bash
+docker rmi -f $(docker images -q)
+```
+
+To view all networks
+```bash
+docker network ls
 ```
