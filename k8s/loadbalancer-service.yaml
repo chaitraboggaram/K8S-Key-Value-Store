@@ -4,7 +4,7 @@ metadata:
   name: my-loadbalancer-service
 spec:
   selector:
-    app: producer-pod
+    app: my-app
   ports:
     - protocol: TCP
       port: 80

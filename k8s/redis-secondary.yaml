@@ -6,11 +6,11 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: redis-secondary
+      app: my-app
   template:
     metadata:
       labels:
-        app: redis-secondary
+        app: my-app
     spec:
       containers:
       - name: redis

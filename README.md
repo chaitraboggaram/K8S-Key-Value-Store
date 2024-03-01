@@ -158,6 +158,7 @@ kubectl apply -f redis-secondary-service.yaml
 kubectl apply -f redis-primary.yaml
 kubectl apply -f redis-secondary.yaml
 kubectl apply -f loadbalancer-service.yaml
+kubectl apply -f network-policy.yaml
 
 Get all pods
 kubectl get pods
@@ -195,6 +196,12 @@ minikube tunnel
 Check if external IP is assigned
 kubectl get services my-loadbalancer-service
 
-curl -X POST http://<external-ip>/set/Key/Value
-<minikube-ip>
-http POST http://192.168.49.2/set/Key1/Value1
+kubernetes cluster info
+kubectl cluster-info | grep 'Kubernetes master'
+kubectl config view --minify | grep server
+
+http POST http://192.168.49.2:32122/set/Key1/Value1
+
+http POST http://127.0.0.1:32122/set/Key1/Value1
+
+kubectl port-forward service/k8s-key-value-store-service 8000:80

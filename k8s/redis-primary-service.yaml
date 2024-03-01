@@ -4,7 +4,7 @@ metadata:
   name: redis-primary-service
 spec:
   selector:
-    app: redis-primary
+    app: my-app
   ports:
     - protocol: TCP
       port: 6379

@@ -1,17 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: producer-deployment
+  name: producer
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: producer-pod
+      app: my-app
   template:
     metadata:
       labels:
-        app: producer-pod
+        app: my-app
     spec:
       containers:
       - name: producer
         image: chaitraboggaram/k8s-key-value-store:producer
+      ports:
+      - containerPort: 8000
