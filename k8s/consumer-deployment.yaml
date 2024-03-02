@@ -3,17 +3,19 @@ kind: Deployment
 metadata:
   name: consumer
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: my-app
+      component: consumer
   template:
     metadata:
       labels:
         app: my-app
+        component: consumer
     spec:
       containers:
       - name: consumer
         image: chaitraboggaram/k8s-key-value-store:consumer
-      ports:
-      - containerPort: 8001
+        ports:
+        - containerPort: 8000

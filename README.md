@@ -7,6 +7,8 @@ Developing a key-value store using Kubernetes (K8s), FastAPI, and Huey as a REDI
 ```bash
 docker network create my-network
 ```
+Make sure docker application is open and running
+
 </br>
 
 ## Building Docker Image
@@ -74,6 +76,7 @@ Get the key value pair
 ```bash
 docker exec -it <ProducerContainerID> http POST http://localhost:8000/set/Key/Value
 ```
+580d55b3ac28
 
 #### GET value for specific key
 ```bash
@@ -173,14 +176,11 @@ Deleting services
 kubectl get services
 kubectl delete service redis-service consumer-service producer-service
 
-Adding loadbalancer service
-kubectl apply -f loadbalancer-service.yaml
-
 Delete everything
 kubectl delete all --all
 
-kubectl exec -it <producer-pod-name> -- container-name http POST http://<producer-service-name>:8000/set/Key/Value
-kubectl exec -it <pod-name> -- container-name http POST http://<service-name>:8000/set/Key1/Value1
+kubectl exec -it <producer-pod-name> --container <container-name> http POST http://<producer-service-name>:8000/set/Key/Value
+kubectl exec -it producer-79544f6d68-4blzh --container producer http POST http://producer-service:8000/set/Key1/Value1
 
 Get loadbalancer port
 kubectl get services my-loadbalancer-service --output='jsonpath="{.spec.ports[0].nodePort}"'
@@ -202,6 +202,63 @@ kubectl config view --minify | grep server
 
 http POST http://192.168.49.2:32122/set/Key1/Value1
 
-http POST http://127.0.0.1:32122/set/Key1/Value1
+http POST http://127.0.0.1:8000/set/Key1/Value1
 
-kubectl port-forward service/k8s-key-value-store-service 8000:80
+Port forwarding 
+kubectl port-forward service/my-loadbalancer-service 8000:80
+
+http POST http://127.0.0.1:8000/set/Key1/Value1
+
+Create a Service using kubectl 
+kubectl expose deployment consumer --port=80 --target-port=8080 \
+        --name=loadbalancer-consumer --type=LoadBalancer
+
+kubectl expose deployment producer --port=80 --target-port=8000
+
+
+minikube service k8s-key-value-store-service --url
+
+
+Login to a container inside kubernetes pod
+kubectl exec -it producer-79544f6d68-4blzh --container producer -- sh
+
+kubectl exec -it producer-79544f6d68-4blzh --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
+
+
+
+In Kubernetes directory
+kubectl apply -f deployment.yaml
+Creates 3 containers inside 1 pod
+
+Login to particular container inside pod
+kubectl exec -it <PodName> -c <ContainerName> -- /bin/bash
+kubectl exec -it app-7667fb7d8-hz6g9 -c producer -- /bin/bash
+http localhost:8000
+http POST http://localhost:8000/set/Key/Value --> Did not work
+
+
+Start again
+kubectl delete all --all
+
+Install network pulgin
+kubectl apply -f https://docs.projectcalico.org/v3.15/manifests/calico.yaml
+kubectl get nodes
+
+# Run a container based on the image
+docker run -it chaitraboggaram/k8s-key-value-store:producer /bin/bash
+
+kubectl apply -f producer-pod.yaml
+kubectl apply -f consumer-pod.yaml
+kubectl apply -f producer-service.yaml
+kubectl apply -f consumer-service.yaml
+kubectl apply -f loadbalancer-service.yaml
+kubectl apply -f redis-primary-service.yaml
+kubectl apply -f redis-primary.yaml
+kubectl apply -f network-policy.yaml
+
+Communicate between pods
+kubectl get pods -o wide
+Copy IP address of pod you want to test
+
+kubectl exec consumer-54fbc5bbdd-whcbv -- curl 10.244.0.12
+kubectl delete networkpolicy allow-web

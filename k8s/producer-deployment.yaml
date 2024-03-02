@@ -3,17 +3,19 @@ kind: Deployment
 metadata:
   name: producer
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: my-app
+      component: producer
   template:
     metadata:
       labels:
         app: my-app
+        component: producer
     spec:
       containers:
       - name: producer
         image: chaitraboggaram/k8s-key-value-store:producer
-      ports:
-      - containerPort: 8000
+        ports:
+        - containerPort: 8000
