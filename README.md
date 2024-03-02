@@ -218,11 +218,14 @@ kubectl expose deployment producer --port=80 --target-port=8000
 
 minikube service k8s-key-value-store-service --url
 
+Login to pod with 1 container
+kubectl exec -it consumer-579f8c79db-pzshd -- /bin/bash
+
 
 Login to a container inside kubernetes pod
 kubectl exec -it producer-79544f6d68-4blzh --container producer -- sh
 
-kubectl exec -it producer-79544f6d68-4blzh --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
+kubectl exec -it producer-85dc9f9dbd-7wqms --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
 
 
 
@@ -240,6 +243,15 @@ http POST http://localhost:8000/set/Key/Value --> Did not work
 Start again
 kubectl delete all --all
 
+
+Do all changes in the docker containers
+docker tag consumer chaitraboggaram/k8s-key-value-store:consumer
+docker tag producer chaitraboggaram/k8s-key-value-store:producer
+
+docker push chaitraboggaram/k8s-key-value-store:consumer
+docker push chaitraboggaram/k8s-key-value-store:producer
+
+
 Install network pulgin
 kubectl apply -f https://docs.projectcalico.org/v3.15/manifests/calico.yaml
 kubectl get nodes
@@ -247,8 +259,8 @@ kubectl get nodes
 # Run a container based on the image
 docker run -it chaitraboggaram/k8s-key-value-store:producer /bin/bash
 
-kubectl apply -f producer-pod.yaml
-kubectl apply -f consumer-pod.yaml
+kubectl apply -f producer-deployment.yaml
+kubectl apply -f consumer-deployment.yaml
 kubectl apply -f producer-service.yaml
 kubectl apply -f consumer-service.yaml
 kubectl apply -f loadbalancer-service.yaml
@@ -260,5 +272,16 @@ Communicate between pods
 kubectl get pods -o wide
 Copy IP address of pod you want to test
 
-kubectl exec consumer-54fbc5bbdd-whcbv -- curl 10.244.0.12
-kubectl delete networkpolicy allow-web
+kubectl exec <ConsumerPodName> -- curl http://<ProducerPodIP>:<ProducerPodPort>
+kubectl exec consumer-579f8c79db-pzshd -- curl http://10.244.0.28:6379
+kubectl exec -it consumer-579f8c79db-pzshd -- redis-cli -h 10.244.0.28 -p 6379
+
+
+kubectl exec producer-7f5bf9bdb8-r9slg -- curl -X POST http://localhost:8000/your-endpoint -H "Content-Type: application/json" -d '{"key1": "value1"}'
+
+kubectl logs <PodName>
+kubectl logs consumer-579f8c79db-pzshd
+
+
+kubectl exec -it consumer-57b8877f55-nxkb2 -- /bin/bash
+

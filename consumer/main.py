@@ -6,10 +6,10 @@ import redis
 
 app = FastAPI()
 
-# Use the service name to connect to the Redis container in a different pod
-redis_pool = redis.ConnectionPool.from_url("redis://redis-primary-service:6379/0")
+REDIS_HOST = os.getenv("REDIS_HOST") or 'localhost' or '127.0.0.1'
+redis_pool = redis.ConnectionPool.from_url(f"redis://{REDIS_HOST}:6379/0")
 redis_client = redis.StrictRedis(connection_pool=redis_pool)
-huey = RedisHuey('entrypoint', host='redis-primary-service')
+huey = RedisHuey('entrypoint', host=REDIS_HOST)
 
 @huey.task()
 def set_key_value(key: str, value: str):

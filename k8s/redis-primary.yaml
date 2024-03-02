@@ -17,3 +17,6 @@ spec:
         image: chaitraboggaram/k8s-key-value-store:redis
         ports:
         - containerPort: 6379
+        env:
+          - name: REDIS_HOST
+            value: "redis-primary-service"
