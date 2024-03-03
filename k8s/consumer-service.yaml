@@ -4,7 +4,7 @@ metadata:
   name: consumer-service
 spec:
   selector:
-    app: my-app
+    app: consumer
     component: consumer
   ports:
     - protocol: TCP

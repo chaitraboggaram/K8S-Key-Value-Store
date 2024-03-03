@@ -6,12 +6,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: my-app
+      app: consumer
       component: consumer
   template:
     metadata:
       labels:
-        app: my-app
+        app: consumer
         component: consumer
     spec:
       containers:

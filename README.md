@@ -1,15 +1,206 @@
 # K8S-Key-Value-Store
 
-Developing a key-value store using Kubernetes (K8s), FastAPI, and Huey as a REDIS queue on Apple M2 MacBook.
+- [Pre-requisites](#pre-requisites)
+- [Working with Kubernetes Pods and Services](#working-with-kubernetes-pods-and-services)
+  - [Start Minikube](#start-minikube)
+  - [Apply Kubernetes Configuration](#apply-kubernetes-configuration)
+  - [Install Network Plugin](#install-network-plugin)
+  - [Post Key-Value Pair to Redis](#post-key-value-pair-to-redis)
+  - [Get Keys for Specific Key](#get-keys-for-specific-key)
+  - [Path to Huey Consumer File](#path-to-huey-consumer-file)
+  - [Check Deployments, Pods, and Services](#check-deployments-pods-and-services)
+  - [Connecting to Any Pod](#connecting-to-any-pod)
+  - [Connect to Redis CLI from Any Pod](#connect-to-redis-cli-from-any-pod)
+- [Other Useful Commands](#other-useful-commands)
+  - [Deleting Pods](#deleting-pods)
+  - [Deleting Services](#deleting-services)
+  - [Completely Clean the Kubernetes Cluster](#completely-clean-the-kubernetes-cluster)
+  - [Open Minikube Dashboard](#open-minikube-dashboard)
+  - [Get Minikube IP](#get-minikube-ip)
+  - [Port Forwarding](#port-forwarding)
+  - [Create a Service using kubectl or Exposing Producer Ports](#create-a-service-using-kubectl-or-exposing-producer-ports)
+  - [Check for Logs in the Pods](#check-for-logs-in-the-pods)
+- [Deploying Key-Value-Store on Docker Container](#deploying-key-value-store-on-docker-container)
+  - [Create a Network and Add Containers to the Network](#create-a-network-and-add-containers-to-the-network)
+- [Building Docker Image](#building-docker-image)
+- [Running Docker Compose](#running-docker-compose)
+- [Pushing the Docker Images to Docker Registry](#pushing-the-docker-images-to-docker-registry)
+- [Redis CLI Commands to Test](#redis-cli-commands-to-test)
+- [Managing Data](#managing-data)
+  - [POST Key-Value Pair](#post-key-value-pair)
+  - [GET Value for a Specific Key](#get-value-for-a-specific-key)
+- [Other Commands](#other-commands)
+  - [Obtain Required Images](#obtain-required-images)
+  - [View All Containers in My Network](#view-all-containers-in-my-network)
+  - [Get IP of the Container](#get-ip-of-the-container)
+  - [Stop All Running Docker Containers](#stop-all-running-docker-containers)
+  - [Remove All Docker Images from Your Machine](#remove-all-docker-images-from-your-machine)
+  - [Force Delete Images](#force-delete-images)
+  - [View All Networks](#view-all-networks)
 
-## Create a network and add conatiners to the network
+---
+
+## Pre-requisites
+
+1. Install Homebrew
+
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ```
+
+2. Install MiniKube
+
+    ```bash
+    brew install minikube
+    ```
+
+3. Install Docker
+
+    - Download Docker from [Docker Documentation](https://docs.docker.com/) based on your Operating System. Sign up with your email address.
+    - Check Docker version:
+
+        ```bash
+        docker --version
+        ```
+
+## Working with Kubernetes Pods and Services
+
+### Start Minikube
 
 ```bash
+minikube start
+```
+
+### Apply Kubernetes Configuration
+
+```bash
+kubectl apply -f <FileName>.yaml
+```
+
+### Install Network Plugin
+
+```bash
+kubectl apply -f https://docs.projectcalico.org/v3.15/manifests/calico.yaml
+```
+
+### Check Deployments, Pods, and Services
+
+```bash
+kubectl get deployments
+kubectl get pods
+kubectl get services
+```
+
+Use -o wide to get more details about pods and services for example `kubectl get pods -o wide`
+
+### Post Key-Value Pair to Redis
+
+```bash
+kubectl exec -it <ProducerPodName> -- sh -c 'http POST http://producer-service:8000/set/Key5/Value5'
+```
+
+### Get Keys for Specific Key
+
+```bash
+kubectl exec -it <ProducerPodName> -- sh -c 'http GET http://producer-service:8000/get/Key5'
+```
+
+### Path to Huey Consumer File
+
+```bash
+python /usr/local/lib/python3.11/site-packages/huey/bin/huey_consumer.py main.huey
+```
+
+
+### Connecting to Any Pod
+
+```bash
+kubectl exec -it <PodName> -- /bin/bash
+```
+
+### Connect to Redis CLI from Any Pod
+
+```bash
+redis-cli -h redis-primary-service -p 6379
+```
+
+## Other Useful Commands
+
+### Deleting Pods
+
+Note deleting pod is similar to refresh of pod, just in case the pod does not get updated with configuration changes in deployment or services file
+
+```bash
+kubectl delete pod <PodName>
+
+# Delete all pods
+kubectl delete pods --all
+```
+
+### Deleting Services
+
+```bash
+kubectl get services
+kubectl delete service redis-service consumer-service producer-service
+```
+
+### Completely Clean the Kubernetes Cluster
+
+```bash
+# Note that this is not recommended
+kubectl delete all --all
+```
+
+### Open Minikube Dashboard
+
+```bash
+minikube dashboard
+```
+
+### Get Minikube IP
+
+```bash
+minikube ip
+```
+
+### Port Forwarding
+
+```bash
+kubectl port-forward service/my-loadbalancer-service 8000:80
+```
+
+### Create a Service using kubectl or Exposing Producer Ports
+
+```bash
+kubectl expose deployment consumer --port=80 --target-port=8080 \
+        --name=loadbalancer-consumer --type=LoadBalancer
+```
+
+OR
+
+```bash
+kubectl expose deployment producer --port=80 --target-port=8000
+```
+
+### Check for Logs in the Pods
+
+```bash
+kubectl logs <PodName>
+```
+
+## Deploying Key-Value-Store on Docker Container
+
+You can clone the content from [GitHub Repository](https://github.com/chaitraboggaram/K8S-Key-Value-Store/commit/a2f3054617aa62f75ff3fe72bdbe26bf986b5291)
+
+### Create a Network and Add Containers to the Network
+
+```bash
+docker login -u <UserName> -p <Password> docker.io
+
 docker network create my-network
 ```
-Make sure docker application is open and running
 
-</br>
+Make sure the Docker application is open and running.
 
 ## Building Docker Image
 
@@ -18,10 +209,9 @@ Build the Docker file with the prerequisites locally using
 ```bash
 docker compose up --build
 ```
-Run producer, consumer and redis seperately in 3 different terminals and have them running as below
-![Alt text](images/docker-compose.png)
 
-</br>
+Run producer, consumer, and Redis separately in 3 different terminals and have them running as below:
+![Docker Compose](images/docker-compose.png)
 
 ## Running Docker Compose
 
@@ -31,274 +221,108 @@ After a successful build, for subsequent runs, use:
 docker-compose up
 ```
 
-This will start the necessary containers and services.
+### Pushing the Docker Images to Docker Registry
 
-</br>
+```bash
+docker push <DockerUserName>/<RepositoryName>:latest
+```
 
-## Redis CLI Commands to Test
-1. Login Redis Container
+This will start the necessary containers and
+
+ services.
+
+### Redis CLI Commands to Test
+
+1. To Login to Container
 
 ```bash
 docker exec -it <RedisContainerID> /bin/bash
 ```
 
 Run the following command to get the container ID:
+
 ```bash
 docker ps
 ```
 
-2. Once logged inside Redis Container, login to CLI
+2. Once logged inside the Redis Container, login to the CLI
+
 ```bash
 redis-cli
 ```
 
 3. Commands to test
+
+- To get all keys
 ```bash
 keys *
 ```
-To get all keys
 
+- Set key-value pair
 ```bash
 SET key "value"
 ```
-Set key value pair
 
+- Get key-value pair
 ```bash
 GET key
 ```
-Get the key value pair
-
-</br>
 
 
 ## Managing Data
-#### POST key value pair
+
+### POST key-value pair
+
 ```bash
 docker exec -it <ProducerContainerID> http POST http://localhost:8000/set/Key/Value
 ```
-docker exec -it 6c876c6250bb http POST http://localhost:8000/set/Key/Value
 
+### GET value for a specific key
 
-#### GET value for specific key
 ```bash
 docker exec -it <ProducerContainerID> http GET http://localhost:8000/get/Key
 ```
-docker exec -it 6c876c6250bb http GET http://localhost:8000/get/Key
 
-#### Update value for a particular key
-```bash
-docker exec -it <ProducerContainerID> http PUT http://localhost:8000/update/Key/NewValue
-```
-#### Delete a key value pair
-```bash
-docker exec -it <ProducerContainerID> http DELETE http://localhost:8000/delete/Key
-```
-</br>
+## Other Commands
 
-## Other commands
-To obtain the required images, use the following commands:
+### Obtain Required Images
 
 ```bash
 docker images
 ```
 
-Views all the containers in my network
+### View all the containers in my network
+
 ```bash
 docker network inspect my-network
 ```
 
-Get IP of container
+### Get IP of the container
+
 ```bash
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <ContainerID>
 ```
-</br>
 
-Stop all running docker containers
+### Stop all running Docker containers
+
 ```bash
 docker stop $(docker ps -aq)
 ```
 
-Remove all docker images from your machine
+### Remove all Docker images from your machine
+
 ```bash
 docker rmi $(docker images -q)
 ```
 
-To force delete images use
+### To force delete images use
+
 ```bash
 docker rmi -f $(docker images -q)
 ```
 
-To view all networks
+### To view all networks
+
 ```bash
 docker network ls
 ```
-
-docker login -u "chaitraboggaram" -p "Padhu@1996" docker.io
-
-docker tag consumer:latest k8s-key-value-store:consumer
-docker tag producer:latest k8s-key-value-store:producer
-docker tag redis:latest k8s-key-value-store:redis
-
-cd to redis
-docker build -t chaitraboggaram/k8s-key-value-store:redis .
-docker push chaitraboggaram/k8s-key-value-store:redis
-
-cd to producer
-docker build -t chaitraboggaram/k8s-key-value-store:producer .
-docker push chaitraboggaram/k8s-key-value-store:producer
-
-cd to consumer
-docker build -t chaitraboggaram/k8s-key-value-store:consumer .
-docker push chaitraboggaram/k8s-key-value-store:consumer
-
-Creating pods and network for pods
-cd k8s
-kubectl apply -f producer-pod.yaml
-kubectl apply -f consumer-pod.yaml
-kubectl apply -f producer-service.yaml
-kubectl apply -f consumer-service.yaml
-kubectl apply -f loadbalancer-service.yaml
-kubectl apply -f redis-primary-service.yaml
-kubectl apply -f redis-secondary-service.yaml
-kubectl apply -f redis-primary.yaml
-kubectl apply -f redis-secondary.yaml
-kubectl apply -f loadbalancer-service.yaml
-kubectl apply -f network-policy.yaml
-
-Get all pods
-kubectl get pods
-
-Deleting pods
-kubectl delete pod redis-pod producer-pod consumer-pod
-kubectl delete pods --all
-
-minikube dashboard
-
-Deleting services
-kubectl get services
-kubectl delete service redis-service consumer-service producer-service
-
-Delete everything
-kubectl delete all --all
-
-kubectl exec -it <producer-pod-name> --container <container-name> http POST http://<producer-service-name>:8000/set/Key/Value
-kubectl exec -it producer-79544f6d68-4blzh --container producer http POST http://producer-service:8000/set/Key1/Value1
-
-Get loadbalancer port
-kubectl get services my-loadbalancer-service --output='jsonpath="{.spec.ports[0].nodePort}"'
-
-Get minikube IP
-minikube ip
-
-Combination of these 2 gives for example: http://192.168.49.2:31181
-
-To get external IP for loadbalancer, have this running in 1 terminal window
-minikube tunnel
-
-Check if external IP is assigned
-kubectl get services my-loadbalancer-service
-
-kubernetes cluster info
-kubectl cluster-info | grep 'Kubernetes master'
-kubectl config view --minify | grep server
-
-http POST http://192.168.49.2:32122/set/Key1/Value1
-
-http POST http://127.0.0.1:8000/set/Key1/Value1
-
-Port forwarding 
-kubectl port-forward service/my-loadbalancer-service 8000:80
-
-http POST http://127.0.0.1:8000/set/Key1/Value1
-
-Create a Service using kubectl 
-kubectl expose deployment consumer --port=80 --target-port=8080 \
-        --name=loadbalancer-consumer --type=LoadBalancer
-
-kubectl expose deployment producer --port=80 --target-port=8000
-
-
-minikube service k8s-key-value-store-service --url
-
-Login to pod with 1 container
-kubectl exec -it consumer-579f8c79db-pzshd -- /bin/bash
-
-
-Login to a container inside kubernetes pod
-kubectl exec -it producer-79544f6d68-4blzh --container producer -- sh
-
-kubectl exec -it producer-85dc9f9dbd-trckw --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
-
-
-
-In Kubernetes directory
-kubectl apply -f deployment.yaml
-Creates 3 containers inside 1 pod
-
-Login to particular container inside pod
-kubectl exec -it <PodName> -c <ContainerName> -- /bin/bash
-kubectl exec -it app-7667fb7d8-hz6g9 -c producer -- /bin/bash
-http localhost:8000
-http POST http://localhost:8000/set/Key/Value --> Did not work
-
-
-Start again
-kubectl delete all --all
-
-Do all changes in the docker containers
-docker tag consumer chaitraboggaram/k8s-key-value-store:consumer
-docker tag producer chaitraboggaram/k8s-key-value-store:producer
-docker tag redis chaitraboggaram/k8s-key-value-store:redis
-
-docker push chaitraboggaram/k8s-key-value-store-consumer:latest
-docker push chaitraboggaram/k8s-key-value-store-producer:latest
-docker push chaitraboggaram/k8s-key-value-store-redis:latest
-
-
-Install network pulgin
-kubectl apply -f https://docs.projectcalico.org/v3.15/manifests/calico.yaml
-kubectl get nodes
-
-# Run a container based on the image
-docker run -it chaitraboggaram/k8s-key-value-store:producer /bin/bash
-
-kubectl apply -f producer-deployment.yaml
-kubectl apply -f consumer-deployment.yaml
-kubectl apply -f producer-service.yaml
-kubectl apply -f consumer-service.yaml
-kubectl apply -f loadbalancer-service.yaml
-kubectl apply -f redis-primary-service.yaml
-kubectl apply -f redis-primary.yaml
-kubectl apply -f network-policy.yaml
-
-Communicate between pods
-kubectl get pods -o wide
-Copy IP address of pod you want to test
-
-kubectl exec <ConsumerPodName> -- curl http://<ProducerPodIP>:<ProducerPodPort>
-kubectl exec consumer-579f8c79db-pzshd -- curl http://10.244.0.28:6379
-kubectl exec -it consumer-579f8c79db-pzshd -- redis-cli -h 10.244.0.28 -p 6379
-
-kubectl logs <PodName>
-kubectl logs consumer-579f8c79db-pzshd
-
-
-kubectl exec -it consumer-57b8877f55-nxkb2 -- /bin/bash
-
-Connect to redis cli from consumer pod
-apt-get update
-apt-get install redis-tools
-pip install redis-cli
-redis-cli -h redis-primary-service
-
-
-Post keys
-kubectl exec -it producer-5789dbbcdd-zm6v4 --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
-
-
-REDIS_HOST = os.environ.get("REDIS_HOST", "redis-primary-service", "127.0.0.1", "localhost")
-
-Make sure to get this command running on consumer
-python /usr/local/lib/python3.11/site-packages/huey/bin/huey_consumer.py main.huey
-
-redis-primary-service.default.svc.cluster.local
