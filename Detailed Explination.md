@@ -166,13 +166,13 @@ minikube ip
 ### Port Forwarding
 
 ```bash
-kubectl port-forward service/my-loadbalancer-service 8000:80
+kubectl port-forward service/loadbalancer-service 8000:80
 ```
 
 ### Create a Service using kubectl or Exposing Producer Ports
 
 ```bash
-kubectl expose deployment consumer --port=80 --target-port=8080 \
+kubectl expose deployment consumer --port=80 --target-port=8000 \
         --name=loadbalancer-consumer --type=LoadBalancer
 ```
 

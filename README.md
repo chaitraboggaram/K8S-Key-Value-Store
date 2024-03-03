@@ -59,6 +59,7 @@
     ```bash
     minikube start
     ```
+If this does not start up or throw error especially for Apple Silicon Chip Macbooks, run `minikube start --driver=docker`
 
 2. **Run the Makefile:**
 
@@ -77,13 +78,13 @@
 4. **Post Key-Value Pair to Redis:**
 
     ```bash
-    kubectl exec -it <ProducerPodName> -- sh -c 'http POST http://producer-service:8000/set/Key5/Value5'
+    kubectl exec -it <ProducerPodName> -- sh -c 'http POST http://producer-service:8000/set/Key/Value'
     ```
 
 5. **Get Keys for Specific Key:**
 
     ```bash
-    kubectl exec -it <ProducerPodName> -- sh -c 'http GET http://producer-service:8000/get/Key5'
+    kubectl exec -it <ProducerPodName> -- sh -c 'http GET http://producer-service:8000/get/Key'
     ```
 
 6. **Clean Installation:**
