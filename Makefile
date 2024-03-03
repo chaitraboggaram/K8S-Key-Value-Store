@@ -1,7 +1,7 @@
 KUBECTL := kubectl
 SLEEP_DURATION := 10
 
-.PHONY: deploy
+.PHONY: deploy clean
 
 deploy:
 	cd k8s && \
@@ -15,4 +15,18 @@ deploy:
 	$(KUBECTL) apply -f redis-primary.yaml && \
 	$(KUBECTL) apply -f network-policy.yaml && \
 	$(KUBECTL) apply -f configmap.yaml && \
-	$(KUBECTL) create configmap redis-config-map --from-file=redis.conf && \
+	$(KUBECTL) create configmap redis-config-map --from-file=redis.conf
+
+clean:
+	cd k8s && \
+	$(KUBECTL) delete -f https://docs.projectcalico.org/v3.15/manifests/calico.yaml && \
+	$(KUBECTL) delete -f producer-deployment.yaml && \
+	$(KUBECTL) delete -f consumer-deployment.yaml && \
+	$(KUBECTL) delete -f producer-service.yaml && \
+	$(KUBECTL) delete -f consumer-service.yaml && \
+	$(KUBECTL) delete -f loadbalancer-service.yaml && \
+	$(KUBECTL) delete -f redis-primary-service.yaml && \
+	$(KUBECTL) delete -f redis-primary.yaml && \
+	$(KUBECTL) delete -f network-policy.yaml && \
+	$(KUBECTL) delete -f configmap.yaml && \
+	$(KUBECTL) delete configmap redis-config-map
