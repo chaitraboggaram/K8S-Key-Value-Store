@@ -78,35 +78,46 @@ If this does not start up or throw error especially for Apple Silicon Chip Macbo
 
     Use `-o wide` to get more details about pods and services. For example, `kubectl get pods -o wide`.
 
-4. **Start Minikube Tunnel**
+4. **Enable minikube metrics**
+    ```bash
+    minikube addons enable metrics-server
+    ```
+    This is optional to check for autoscaling metrics. Wait for 2 mins and then type `kubectl get hpa` to check the metrics
+
+5. **Start Minikube Tunnel**
 
     ```bash
     minikube tunnel
     ```
     Minikube tunnel creates a secure tunnel to the minikube node, allowing external traffic to reach the node port and the service. In our example this gives external IP address for the loadbalancer i.e `127.0.0.1` or `localhost`. To test if the webserver is running access http://127.0.0.1:8000 on your browser.
 
-5. **Post Key-Value Pair to Redis:**
+6. **Post Key-Value Pair to Redis:**
 
     ```bash
     curl -X POST http://127.0.0.1:8000/set/Key1/Value1
     ```
 
-6. **Get Keys for Specific Key:**
+7. **Get Keys for Specific Key:**
 
     ```bash
     curl http://127.0.0.1:8000/get/Key1
     ```
 
-7. **Clean Installation:**
+8. **Clean Installation:**
 
     ```bash
     make clean 
     ```
 
-8. **Stop Minikube:**
+9. **Stop Minikube:**
 
     ```bash
     minikube stop
     ```
 
 ### In case of any issues or for additional commands, refer to [Detailed Explanation.md](Detailed%20Explanation.md).
+
+**Load Testing**
+Make sure you have the Key1 pushed to key value store 
+kubectl run -i --tty load-generator --rm --image=busybox:1.28 --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://loadbalancer-service:8000/; done"
+

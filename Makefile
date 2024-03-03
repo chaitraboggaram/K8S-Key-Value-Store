@@ -17,6 +17,8 @@ deploy:
 	$(KUBECTL) apply -f redis-secondary.yaml && \
 	$(KUBECTL) apply -f network-policy.yaml && \
 	$(KUBECTL) apply -f configmap.yaml && \
+	$(KUBECTL) apply -f producer-autoscale.yaml && \
+	$(KUBECTL) apply -f consumer-autoscale.yaml && \
 	$(KUBECTL) create configmap redis-config-map --from-file=redis.conf
 
 clean:
@@ -33,4 +35,6 @@ clean:
 	$(KUBECTL) delete -f redis-secondary.yaml && \
 	$(KUBECTL) delete -f network-policy.yaml && \
 	$(KUBECTL) delete -f configmap.yaml && \
+	$(KUBECTL) delete -f producer-autoscale.yaml && \
+	$(KUBECTL) delete -f consumer-autoscale.yaml && \
 	$(KUBECTL) delete configmap redis-config-map
