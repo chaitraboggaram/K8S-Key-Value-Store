@@ -13,6 +13,8 @@ deploy:
 	$(KUBECTL) apply -f loadbalancer-service.yaml && \
 	$(KUBECTL) apply -f redis-primary-service.yaml && \
 	$(KUBECTL) apply -f redis-primary.yaml && \
+	$(KUBECTL) apply -f redis-secondary-service.yaml && \
+	$(KUBECTL) apply -f redis-secondary.yaml && \
 	$(KUBECTL) apply -f network-policy.yaml && \
 	$(KUBECTL) apply -f configmap.yaml && \
 	$(KUBECTL) create configmap redis-config-map --from-file=redis.conf
@@ -27,6 +29,8 @@ clean:
 	$(KUBECTL) delete -f loadbalancer-service.yaml && \
 	$(KUBECTL) delete -f redis-primary-service.yaml && \
 	$(KUBECTL) delete -f redis-primary.yaml && \
+	$(KUBECTL) delete -f redis-secondary-service.yaml && \
+	$(KUBECTL) delete -f redis-secondary.yaml && \
 	$(KUBECTL) delete -f network-policy.yaml && \
 	$(KUBECTL) delete -f configmap.yaml && \
 	$(KUBECTL) delete configmap redis-config-map

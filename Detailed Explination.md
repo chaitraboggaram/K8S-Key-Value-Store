@@ -70,6 +70,7 @@
 ```bash
 minikube start
 ```
+If this does not start up or throw error especially for Apple Silicon Chip Macbooks, run `minikube start --driver=docker`
 
 ### Apply Kubernetes Configuration
 
@@ -95,14 +96,23 @@ Use -o wide to get more details about pods and services for example `kubectl get
 
 ### Post Key-Value Pair to Redis
 
+When `minikube tunnel` is not running
 ```bash
 kubectl exec -it <ProducerPodName> -- sh -c 'http POST http://producer-service:8000/set/Key5/Value5'
 ```
-
+OR
+```bash
+curl -X POST http://127.0.0.1:8000/set/Key1/Value1
+```
 ### Get Keys for Specific Key
+When `minikube tunnel` is not running
 
 ```bash
 kubectl exec -it <ProducerPodName> -- sh -c 'http GET http://producer-service:8000/get/Key5'
+```
+OR
+```bash
+curl http://127.0.0.1:8000/get/Key1
 ```
 
 ### Path to Huey Consumer File

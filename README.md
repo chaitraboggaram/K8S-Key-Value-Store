@@ -1,6 +1,7 @@
 # K8S-Key-Value-Store
 
-### Developing a key-value store using Kubernetes (K8s), FastAPI, and Huey as a REDIS queue on Apple M2 MacBook.
+### Developing a key-value store using Kubernetes (K8s) with Minikube for clustering, Docker Containers as containers in minikube pods, FastAPI web framework for building APIs, and Huey as a REDIS queue and storage with replication and autoscaling.
+
 
 </br>
 
@@ -14,12 +15,14 @@
   - [1. Start Minikube](#1-start-minikube)
   - [2. Run the Makefile](#2-run-the-makefile)
   - [3. Check if Pods are Working](#3-check-if-pods-are-working)
-  - [4. Post Key-Value Pair to Redis](#4-post-key-value-pair-to-redis)
-  - [5. Get Keys for Specific Key](#5-get-keys-for-specific-key)
-  - [6. Clean Installation](#6-clean-installation)
-  - [7. Stop Minikube](#7-stop-minikube)
+  - [4. Start Minikube Tunnel](#4-start-minikube-tunnel)
+  - [5. Post Key-Value Pair to Redis](#5-post-key-value-pair-to-redis)
+  - [6. Get Keys for Specific Key](#6-get-keys-for-specific-key)
+  - [7. Clean Installation](#7-clean-installation)
+  - [8. Stop Minikube](#8-stop-minikube)
 - [**In Case of Issues or Additional Commands**](#in-case-of-issues-or-additional-commands)
   - [Refer to Detailed Explanation.md](#refer-to-detailed-explanationmd)
+
 
 </br>
 
@@ -75,25 +78,32 @@ If this does not start up or throw error especially for Apple Silicon Chip Macbo
 
     Use `-o wide` to get more details about pods and services. For example, `kubectl get pods -o wide`.
 
-4. **Post Key-Value Pair to Redis:**
+4. **Start Minikube Tunnel**
 
     ```bash
-    kubectl exec -it <ProducerPodName> -- sh -c 'http POST http://producer-service:8000/set/Key/Value'
+    minikube tunnel
     ```
+    Minikube tunnel creates a secure tunnel to the minikube node, allowing external traffic to reach the node port and the service. In our example this gives external IP address for the loadbalancer i.e `127.0.0.1` or `localhost`. To test if the webserver is running access http://127.0.0.1:8000 on your browser.
 
-5. **Get Keys for Specific Key:**
+5. **Post Key-Value Pair to Redis:**
 
     ```bash
-    kubectl exec -it <ProducerPodName> -- sh -c 'http GET http://producer-service:8000/get/Key'
+    curl -X POST http://127.0.0.1:8000/set/Key1/Value1
     ```
 
-6. **Clean Installation:**
+6. **Get Keys for Specific Key:**
+
+    ```bash
+    curl http://127.0.0.1:8000/get/Key1
+    ```
+
+7. **Clean Installation:**
 
     ```bash
     make clean 
     ```
 
-7. **Stop Minikube:**
+8. **Stop Minikube:**
 
     ```bash
     minikube stop
