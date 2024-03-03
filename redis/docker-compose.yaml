@@ -2,9 +2,14 @@ version: "3"
 
 services:
   redis:
-    image: redis
+    build: .
+    ports:
+      - 6379:6379
+    volumes:
+      - .:/app
     networks:
       - my-network
+    image: chaitraboggaram/k8s-key-value-store-redis:latest
 
 networks:
   my-network:

@@ -76,12 +76,14 @@ Get the key value pair
 ```bash
 docker exec -it <ProducerContainerID> http POST http://localhost:8000/set/Key/Value
 ```
-580d55b3ac28
+docker exec -it 6c876c6250bb http POST http://localhost:8000/set/Key/Value
+
 
 #### GET value for specific key
 ```bash
 docker exec -it <ProducerContainerID> http GET http://localhost:8000/get/Key
 ```
+docker exec -it 6c876c6250bb http GET http://localhost:8000/get/Key
 
 #### Update value for a particular key
 ```bash
@@ -225,7 +227,7 @@ kubectl exec -it consumer-579f8c79db-pzshd -- /bin/bash
 Login to a container inside kubernetes pod
 kubectl exec -it producer-79544f6d68-4blzh --container producer -- sh
 
-kubectl exec -it producer-85dc9f9dbd-7wqms --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
+kubectl exec -it producer-85dc9f9dbd-trckw --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
 
 
 
@@ -243,13 +245,10 @@ http POST http://localhost:8000/set/Key/Value --> Did not work
 Start again
 kubectl delete all --all
 
-
 Do all changes in the docker containers
-docker tag consumer chaitraboggaram/k8s-key-value-store:consumer
-docker tag producer chaitraboggaram/k8s-key-value-store:producer
-
-docker push chaitraboggaram/k8s-key-value-store:consumer
-docker push chaitraboggaram/k8s-key-value-store:producer
+docker push chaitraboggaram/k8s-key-value-store-consumer:latest
+docker push chaitraboggaram/k8s-key-value-store-producer:latest
+docker push chaitraboggaram/k8s-key-value-store-redis:latest
 
 
 Install network pulgin
@@ -276,12 +275,25 @@ kubectl exec <ConsumerPodName> -- curl http://<ProducerPodIP>:<ProducerPodPort>
 kubectl exec consumer-579f8c79db-pzshd -- curl http://10.244.0.28:6379
 kubectl exec -it consumer-579f8c79db-pzshd -- redis-cli -h 10.244.0.28 -p 6379
 
-
-kubectl exec producer-7f5bf9bdb8-r9slg -- curl -X POST http://localhost:8000/your-endpoint -H "Content-Type: application/json" -d '{"key1": "value1"}'
-
 kubectl logs <PodName>
 kubectl logs consumer-579f8c79db-pzshd
 
 
 kubectl exec -it consumer-57b8877f55-nxkb2 -- /bin/bash
+
+Connect to redis cli from consumer pod
+apt-get update
+apt-get install redis-tools
+pip install redis-cli
+redis-cli -h redis-primary-service
+
+
+Post keys
+kubectl exec -it producer-9db84d6cd-76r9s --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
+
+
+REDIS_HOST = os.environ.get("REDIS_HOST", "redis-primary-service", "127.0.0.1", "localhost")
+
+Make sure to get this command running on consumer
+python /usr/local/lib/python3.11/site-packages/huey/bin/huey_consumer.py main.huey
 

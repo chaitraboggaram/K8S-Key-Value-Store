@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
       - name: producer
-        image: chaitraboggaram/k8s-key-value-store:producer
+        image: chaitraboggaram/k8s-key-value-store-producer:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
         - name: REDIS_HOST
-          value: "redis-primary-service.default.svc.cluster.local"
+          value: "redis-primary-service"

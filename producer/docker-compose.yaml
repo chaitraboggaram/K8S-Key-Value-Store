@@ -10,7 +10,7 @@ services:
       - .:/app
     networks:
       - my-network
-    image: producer:latest
+    image: chaitraboggaram/k8s-key-value-store-producer:latest
 
 networks:
   my-network:

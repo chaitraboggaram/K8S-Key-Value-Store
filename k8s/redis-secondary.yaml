@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: redis
-        image: chaitraboggaram/k8s-key-value-store:redis
+        image: chaitraboggaram/k8s-key-value-store-redis:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 6379
         command:
