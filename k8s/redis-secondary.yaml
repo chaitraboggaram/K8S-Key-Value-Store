@@ -18,8 +18,3 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 6379
-        command:
-        - "redis-server"
-        - "--slaveof"
-        - "redis-primary-service"
-        - "6379"

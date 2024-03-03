@@ -23,4 +23,7 @@ spec:
         env:
         - name: REDIS_HOST
           value: "redis-primary-service"
-        command: python /usr/local/lib/python3.11/site-packages/huey/bin/huey_consumer.py main.huey
+        command: 
+        - "python"
+        - "/usr/local/lib/python3.11/site-packages/huey/bin/huey_consumer.py"
+        - "main.huey"

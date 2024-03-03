@@ -246,6 +246,10 @@ Start again
 kubectl delete all --all
 
 Do all changes in the docker containers
+docker tag consumer chaitraboggaram/k8s-key-value-store:consumer
+docker tag producer chaitraboggaram/k8s-key-value-store:producer
+docker tag redis chaitraboggaram/k8s-key-value-store:redis
+
 docker push chaitraboggaram/k8s-key-value-store-consumer:latest
 docker push chaitraboggaram/k8s-key-value-store-producer:latest
 docker push chaitraboggaram/k8s-key-value-store-redis:latest
@@ -289,7 +293,7 @@ redis-cli -h redis-primary-service
 
 
 Post keys
-kubectl exec -it producer-9db84d6cd-76r9s --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
+kubectl exec -it producer-5789dbbcdd-zm6v4 --container producer -- sh -c 'http POST http://producer-service:8000/set/Key1/Value1'
 
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "redis-primary-service", "127.0.0.1", "localhost")
@@ -297,3 +301,4 @@ REDIS_HOST = os.environ.get("REDIS_HOST", "redis-primary-service", "127.0.0.1", 
 Make sure to get this command running on consumer
 python /usr/local/lib/python3.11/site-packages/huey/bin/huey_consumer.py main.huey
 
+redis-primary-service.default.svc.cluster.local
