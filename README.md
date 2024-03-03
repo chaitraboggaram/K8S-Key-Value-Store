@@ -115,9 +115,20 @@ If this does not start up or throw error especially for Apple Silicon Chip Macbo
     minikube stop
     ```
 
-### In case of any issues or for additional commands, refer to [Detailed Explanation.md](Detailed%20Explanation.md).
+---
 
-**Load Testing**
-Make sure you have the Key1 pushed to key value store 
+</br>
+
+### Load Testing
+
+1. **If you want to test load without any key pair**
+```bash
 kubectl run -i --tty load-generator --rm --image=busybox:1.28 --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://loadbalancer-service:8000/; done"
+```
 
+2. **If you want to load test on an existing key**
+```bash
+kubectl run -i --tty load-generator --rm --image=busybox:1.28 --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://loadbalancer-service:8000/get/Key1; done"
+```
+Wait for 2 mins to view the changes, you can run `kubectl get hpa` to check the metrics updates or run `kubectl get pods` number of pods that are running currently
+### In case of any issues or for additional commands, refer to [Detailed Explanation.md](Detailed%20Explanation.md).
