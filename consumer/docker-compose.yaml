@@ -4,7 +4,7 @@ services:
   consumer:
     build: .
     ports:
-      - 8002:8002
+      - 8001:8001
     volumes:
       - .:/app
     networks:
