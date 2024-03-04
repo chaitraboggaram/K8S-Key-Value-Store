@@ -1,5 +1,5 @@
 KUBECTL := kubectl
-SLEEP_DURATION := 2
+SLEEP_DURATION := 5
 
 create:
 	cd k8s && \
@@ -17,7 +17,7 @@ create:
 	$(KUBECTL) apply -f configmap.yaml && \
 	$(KUBECTL) apply -f producer-autoscale.yaml && \
 	$(KUBECTL) apply -f consumer-autoscale.yaml && \
-	$(KUBECTL) create configmap redis-config-map --from-file=redis.conf && \
+	$(KUBECTL) apply -f redis-config.yaml && \
 	minikube addons enable metrics-server && \
 	sleep $(SLEEP_DURATION) && \
 	minikube tunnel
@@ -63,4 +63,4 @@ clean:
 	$(KUBECTL) delete -f configmap.yaml && \
 	$(KUBECTL) delete -f producer-autoscale.yaml && \
 	$(KUBECTL) delete -f consumer-autoscale.yaml && \
-	$(KUBECTL) delete configmap redis-config-map
+	$(KUBECTL) delete -f redis-config.yaml

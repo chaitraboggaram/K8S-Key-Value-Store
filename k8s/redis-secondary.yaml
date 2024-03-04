@@ -6,11 +6,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      app: redis-secondary
   template:
     metadata:
       labels:
-        app: redis
+        app: redis-secondary
     spec:
       containers:
       - name: redis
@@ -20,6 +20,7 @@ spec:
         - containerPort: 6379
         command:
         - "redis-server"
+        args:
         - "--slaveof"
         - "redis-primary-service"
         - "6379"

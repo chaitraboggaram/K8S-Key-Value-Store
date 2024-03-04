@@ -1,34 +1,55 @@
 # K8S-Key-Value-Store
 
-### Developing a key-value store using Kubernetes (K8s) with Minikube for clustering, Docker Containers as containers in minikube pods, FastAPI web framework for building APIs, and Huey as a REDIS queue and storage with replication and autoscaling.
+A Key-Value store has been developed using Kubernetes (K8s) with Minikube for clustering. Docker Containers are employed as containers within Minikube pods. The FastAPI web framework is utilized for building APIs, while Huey serves as a REDIS queue and storage solution with replication and autoscaling features.
 
 
-</br>
 
 ## Table of Contents
 
-- [**Pre-requisites**](#pre-requisites)
-  - [1. Install Homebrew](#1-install-homebrew)
-  - [2. Install Docker](#2-install-docker)
-  - [3. Install MiniKube](#3-install-minikube)
-- [**How to Start the K8S-Key-Value Service**](#how-to-start-the-k8s-key-value-service)
-  - [1. Start Minikube](#1-start-minikube)
-  - [2. Run the Makefile](#2-run-the-makefile)
-  - [3. Check if Pods are Working](#3-check-if-pods-are-working)
-  - [4. Start Minikube Tunnel](#4-start-minikube-tunnel)
-  - [5. Post Key-Value Pair to Redis](#5-post-key-value-pair-to-redis)
-  - [6. Get Keys for Specific Key](#6-get-keys-for-specific-key)
-  - [7. Clean Installation](#7-clean-installation)
-  - [8. Stop Minikube](#8-stop-minikube)
-- [**In Case of Issues or Additional Commands**](#in-case-of-issues-or-additional-commands)
-  - [Refer to Detailed Explanation.md](#refer-to-detailed-explanationmd)
+1. [Kubernetes Key-Value Store Architecture](#kubernetes-key-value-store-architecture)
+  
+2. [Pre-requisites](#pre-requisites)
+   - [Install Homebrew](#1-install-homebrew)
+   - [Install Docker](#2-install-docker)
+   - [Install MiniKube](#3-install-minikube)
+  
+3. [How to Start the K8S-Key-Value Service](#how-to-start-the-k8s-key-value-service)
+   - [Start Minikube](#1-start-minikube)
+   - [Run the Makefile](#2-run-the-makefile)
+   - [Post Key-Value Pair to Redis](#3-post-key-value-pair-to-redis)
+   - [Get Keys for Specific Key](#4-get-keys-for-specific-key)
+   - [Clean Installation](#5-clean-installation)
+   - [Stop Minikube](#6-stop-minikube)
+  
+4. [Kubernetes Gotchas](#kubernetes-gotchas)
+   - [Check Pods or Services or Deployments Status](#1-check-pods-or-services-or-deployments-status)
+   - [Start Minikube Tunnel](#2-start-minikube-tunnel)
+   - [Enable Minikube Metrics](#3-enable-minikube-metrics)
+  
+5. [Load Testing](#load-testing)
+   - [Test Load without Any Key Pair](#1-if-you-want-to-test-load-without-any-key-pair)
+   - [Load Test on an Existing Key](#2-if-you-want-to-load-test-on-an-existing-key)
+
+6. [Additional References](#additional-references)
+   - [Detailed Explanation.md](Detailed%20Explanation.md)
 
 
 </br>
 
 ---
 
-### Pre-requisites
+### Kubernetes Key-Value Store Architecture
+
+![Alt text](Images/k8s-key-value-store-architecture.jpg)
+
+</br>
+
+---
+
+### Pre-requisites 
+
+NOTE: The instructions below are based on MacOS.
+
 
 1. **Install Homebrew:**
 
@@ -55,6 +76,7 @@
 
 ---
 
+
 ### How to Start the K8S-Key-Value Service
 
 1. **Start Minikube:**
@@ -69,57 +91,72 @@ If this does not start up or throw error especially for Apple Silicon Chip Macbo
     ```bash
     make
     ```
+- `make create`: By default, make command runs make create. This creates and sets up the whole kubernetes project
+- `make deploy`: If you want to update any kubernetes infrastructure
 
-3. **Check if Pods are Working:**
-
+3. **Test Key-Value Store service**
     ```bash
-    kubectl get pods
+    make test
     ```
 
-    Use `-o wide` to get more details about pods and services. For example, `kubectl get pods -o wide`.
-
-4. **Enable minikube metrics**
-    ```bash
-    minikube addons enable metrics-server
-    ```
-    This is optional to check for autoscaling metrics. Wait for 2 mins and then type `kubectl get hpa` to check the metrics
-
-5. **Start Minikube Tunnel**
+4. **Post Key-Value Pair:**
 
     ```bash
-    minikube tunnel
+    curl -X POST http://localhost:8000/set/Key/Value
     ```
-    Minikube tunnel creates a secure tunnel to the minikube node, allowing external traffic to reach the node port and the service. In our example this gives external IP address for the loadbalancer i.e `127.0.0.1` or `localhost`. To test if the webserver is running access http://127.0.0.1:8000 on your browser.
 
-6. **Post Key-Value Pair to Redis:**
+5. **Get Keys for Specific Key:**
 
     ```bash
-    curl -X POST http://127.0.0.1:8000/set/Key1/Value1
+    curl http://localhost:8000/get/Key
     ```
 
-7. **Get Keys for Specific Key:**
-
-    ```bash
-    curl http://127.0.0.1:8000/get/Key1
-    ```
-
-8. **Clean Installation:**
+6. **Clean Installation:**
 
     ```bash
     make clean 
     ```
 
-9. **Stop Minikube:**
+7. **Stop Minikube:**
 
     ```bash
     minikube stop
     ```
+</br>
 
 ---
 
+### Kubernetes gotchas
+
+1. **Check Pods or services or deployments status**
+
+    ```bash
+    kubectl get pods
+    kubectl get services
+    kubectl get deployments
+    ```
+
+    Use `-o wide` to get more details about pods and services. For example, `kubectl get pods -o wide`.
+
+2. **Start Minikube Tunnel**
+
+    ```bash
+    minikube tunnel
+    ```
+    Minikube tunnel creates a secure tunnel to the minikube node, allowing external traffic to reach the node port and the service. In our example this gives external IP address for the loadbalancer i.e `127.0.0.1` or `localhost`. To test if the webserver is running access http://localhost:8000 on your browser.
+
+3. **Enable minikube metrics**
+    ```bash
+    minikube addons enable metrics-server
+    ```
+    This is optional to check for autoscaling metrics. Wait for 2 mins and then type `kubectl get hpa` to check the metrics
+
 </br>
 
+---
+
 ### Load Testing
+
 
 1. **If you want to test load without any key pair**
 ```bash

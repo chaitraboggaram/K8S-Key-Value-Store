@@ -18,3 +18,11 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 6379
+        volumeMounts:
+        - name: redis-config
+          mountPath: /etc/redis
+          readOnly: true
+      volumes:
+      - name: redis-config
+        configMap:
+          name: redis-config-map
