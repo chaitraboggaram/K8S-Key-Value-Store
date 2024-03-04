@@ -14,6 +14,7 @@ A Key-Value store has been developed using Kubernetes (K8s) with Minikube for cl
    - [Install MiniKube](#3-install-minikube)
   
 3. [How to Start the K8S-Key-Value Service](#how-to-start-the-k8s-key-value-service)
+   - [Demo of Key-Value-Store](#demo-of-key-value-store)
    - [Start Minikube](#1-start-minikube)
    - [Run the Makefile](#2-run-the-makefile)
    - [Post Key-Value Pair to Redis](#3-post-key-value-pair-to-redis)
@@ -21,16 +22,16 @@ A Key-Value store has been developed using Kubernetes (K8s) with Minikube for cl
    - [Clean Installation](#5-clean-installation)
    - [Stop Minikube](#6-stop-minikube)
   
-4. [Kubernetes Gotchas](#kubernetes-gotchas)
+5. [Kubernetes Gotchas](#kubernetes-gotchas)
    - [Check Pods or Services or Deployments Status](#1-check-pods-or-services-or-deployments-status)
    - [Start Minikube Tunnel](#2-start-minikube-tunnel)
    - [Enable Minikube Metrics](#3-enable-minikube-metrics)
   
-5. [Load Testing](#load-testing)
+6. [Load Testing](#load-testing)
    - [Test Load without Any Key Pair](#1-if-you-want-to-test-load-without-any-key-pair)
    - [Load Test on an Existing Key](#2-if-you-want-to-load-test-on-an-existing-key)
 
-6. [Additional References](#additional-references)
+7. [Additional References](#additional-references)
    - [Detailed Explanation.md](Detailed%20Explanation.md)
 
 
@@ -78,6 +79,13 @@ NOTE: The instructions below are based on MacOS.
 
 
 ### How to Start the K8S-Key-Value Service
+
+#### Demo of Key-Value-Store
+
+https://github.com/chaitraboggaram/K8S-Key-Value-Store/assets/113207424/a25e7216-4918-440f-907d-e313f126b120
+
+</br>
+
 
 1. **Start Minikube:**
 
