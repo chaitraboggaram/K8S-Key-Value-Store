@@ -18,10 +18,12 @@ A Key-Value store has been developed using Kubernetes (K8s) with Minikube for cl
    - [Start Minikube](#1-start-minikube)
    - [Run the Makefile](#2-run-the-makefile)
    - [Test Key-Value Store service](#3-test-key-value-store-service)
-   - [Post Key-Value Pair to Redis](#4-post-key-value-pair-to-redis)
-   - [Get Keys for Specific Key](#5-get-keys-for-specific-key)
-   - [Clean Installation](#6-clean-installation)
-   - [Stop Minikube](#7-stop-minikube)
+   - [Insert Key-Value Pair](#4-post-key-value-pair)
+   - [Get Value for Specific Key](#5-get-keys-for-specific-key)
+   - [Update Value for Specific Key](#6-update-value-for-specific-key)
+   - [Delete Specific Key](#7-delete-specifi-key)
+   - [Clean Installation](#8-clean-installation)
+   - [Stop Minikube](#9-stop-minikube)
   
 4. [Kubernetes Gotchas](#kubernetes-gotchas)
    - [Check Pods or Services or Deployments Status](#1-check-pods-or-services-or-deployments-status)
@@ -32,11 +34,12 @@ A Key-Value store has been developed using Kubernetes (K8s) with Minikube for cl
    - [Test Load without Any Key Pair](#1-if-you-want-to-test-load-without-any-key-pair)
    - [Load Test on an Existing Key](#2-if-you-want-to-load-test-on-an-existing-key)
 
-6. [Results]
+6. [Sample Testing Results](#sample-testing-results)
 
-7. [Additional References](#additional-references)
+7. [Future Improvements](#future-improvements)
+
+8. [Additional References](#additional-references)
    - [Detailed Explanation.md](Detailed%20Explanation.md)
-   - [Future improvements]
 
 
 </br>
@@ -111,25 +114,37 @@ If this does not start up or throw error especially for Apple Silicon Chip Macbo
     make test
     ```
 
-4. **Post Key-Value Pair:**
+4. **Insert Key-Value Pair:**
 
     ```bash
     curl -X POST http://localhost:8000/set/Key/Value
     ```
 
-5. **Get Keys for Specific Key:**
+5. **Get Value for Specific Key:**
 
     ```bash
     curl http://localhost:8000/get/Key
     ```
 
-6. **Clean Installation:**
+6. **Update Value for Specific Key**
+
+    ```bash
+    curl -X PUT http://localhost:8000/update/Key/NewValue 
+    ```
+
+7. **Delete Specific Key**
+
+    ```bash
+    curl -X DELETE http://localhost:8000/delete/Key
+    ```
+
+8. **Clean Installation:**
 
     ```bash
     make clean 
     ```
 
-7. **Stop Minikube:**
+9. **Stop Minikube:**
 
     ```bash
     minikube stop
@@ -167,6 +182,13 @@ If this does not start up or throw error especially for Apple Silicon Chip Macbo
 
 ---
 
+### Sample Testing Results
+
+![Results](Images/results.png)
+
+</br>
+
+---
 ### Load Testing
 
 
@@ -180,5 +202,23 @@ kubectl run -i --tty load-generator --rm --image=busybox:1.28 --restart=Never --
 kubectl run -i --tty load-generator --rm --image=busybox:1.28 --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://loadbalancer-service:8000/get/Key1; done"
 ```
 
+
 Wait for 2 mins to view the changes, you can run `kubectl get hpa` to check the metrics updates or run `kubectl get pods` number of pods that are running currently
-### In case of any issues or for additional commands, refer to [Detailed Explanation.md](Detailed%20Explanation.md).
+
+</br>
+
+---
+
+### Future Improvements
+
+- Persistent storage for Redis to handle Disaster Recovery scenarios.
+- Cluster mode for Redis.
+- User friendly frontend interface for easier interaction with Key-Value Store service.
+
+</br>
+
+---
+
+### Additional References
+**In case of any issues or for additional commands, refer to [Detailed Explanation.md](Detailed%20Explanation.md).**
+

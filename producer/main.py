@@ -16,6 +16,16 @@ def set_key_value(key: str, value: str):
     print(f"Setting key: {key}, value: {value}")
     redis_client.set(key, value)
 
+@huey.task()
+def update_key_value(key: str, value: str):
+    print(f"Updating key: {key}")
+    redis_client.set(key, value)
+
+@huey.task()
+def delete_key(key: str):
+    print(f"Deleting key: {key}")
+    redis_client.delete(key)
+
 @app.on_event("startup")
 def startup_event():
     pass
@@ -34,4 +44,18 @@ def read_item(key: str):
 @app.post("/set/{key}/{value}")
 async def set_item(key: str, value: str):
     set_key_value.schedule(args=(key, value), delay=0)
+    return {"message": "Task enqueued for setting key-value pair."}
+
+@app.put("/update/{key}/{value}")
+async def update_item(key: str, value: str):
+    if not redis_client.exists(key):
+        raise HTTPException(status_code=404, detail="Key not found")
+    update_key_value.schedule(args=(key, value), delay=0)
+    return {"message": "Task enqueued for updating key-value pair."}
+
+@app.delete("/delete/{key}")
+async def delete_item(key: str):
+    if not redis_client.exists(key):
+        raise HTTPException(status_code=404, detail="Key not found")
+    delete_key.schedule(args=(key,), delay=0)
     return {"message": "Task enqueued for setting key-value pair."}

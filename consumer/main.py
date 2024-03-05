@@ -11,3 +11,13 @@ huey = RedisHuey('entrypoint', host=REDIS_HOST)
 def set_key_value(key: str, value: str):
     print(f"Setting key: {key}, value: {value}")
     redis_client.set(key, value)
+
+@huey.task()
+def update_key_value(key: str, value: str):
+    print(f"Updating key: {key}")
+    redis_client.set(key, value)
+
+@huey.task()
+def delete_key(key: str):
+    print(f"Deleting key: {key}")
+    redis_client.delete(key)
